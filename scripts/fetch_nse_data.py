@@ -1,61 +1,44 @@
 import requests
 import json
 import time
-import sys
+from datetime import datetime
 
-# Test ke liye sirf 3 stocks. Baad me list badhana
-symbols = ['SBIN', 'RELIANCE', 'INFY']
-
-session = requests.Session()
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    'Accept': '*/*',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Referer': 'https://www.nseindia.com/market-data/live-equity-market',
-    'Connection': 'keep-alive'
-}
-
-print("Hitting NSE homepage first...")
-try:
-    session.get("https://www.nseindia.com", headers=headers, timeout=5)
-    print("Homepage OK")
-except Exception as e:
-    print(f"Homepage failed: {e}")
-    sys.exit(1)
-
-time.sleep(2)
+# F&O stocks with NSE suffix for Yahoo
+symbols = ['SBIN.NS', 'RELIANCE.NS', 'INFY.NS', 'TCS.NS', 'HDFCBANK.NS']
 data = []
+
+def get_yahoo_data(symbol):
+    try:
+        # Spot price
+        spot_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+        r = requests.get(spot_url, timeout=10)
+        spot = r.json()['chart']['result'][0]['meta']['regularMarketPrice']
+
+        # Futures - Yahoo me direct nahi milta, isliye NSE se hi try karna padega
+        # Abhi ke liye dummy data daal rahe, Dhan API aane pe real karenge
+        curr_fut = spot * 1.018 # 1.8% premium maan ke
+        next_fut = spot * 1.019
+
+        return {
+            'symbol': symbol.replace('.NS', ''),
+            'spot': round(spot, 2),
+            'currFut': round(curr_fut, 2),
+            'nextFut': round(next_fut, 2),
+            'diffSpotFut': round((curr_fut - spot) / spot * 100, 2),
+            'diffFutFut': round((next_fut - curr_fut) / curr_fut * 100, 2),
+            'timestamp': str(datetime.now())
+        }
+    except Exception as e:
+        print(f"Error {symbol}: {e}")
+        return None
 
 for symbol in symbols:
     print(f"Fetching {symbol}...")
-    try:
-        url = f"https://www.nseindia.com/api/quote-derivative?symbol={symbol}"
-        r = session.get(url, headers=headers, timeout=5)
-        print(f"Status for {symbol}: {r.status_code}")
-
-        if r.status_code == 200:
-            d = r.json()
-            stocks = d.get('stocks', [])
-            if d.get('underlyingValue') and len(stocks) >= 2:
-                spot = d['underlyingValue']
-                currFut = stocks[0]['metadata']['lastPrice']
-                nextFut = stocks[1]['metadata']['lastPrice']
-                data.append({
-                    'symbol': symbol,
-                    'spot': spot,
-                    'currFut': currFut,
-                    'nextFut': nextFut,
-                    'diffSpotFut': round((currFut - spot) / spot * 100, 2),
-                    'diffFutFut': round((nextFut - currFut) / currFut * 100, 2),
-                })
-                print(f"Success: {symbol}")
-        else:
-            print(f"Failed {symbol}: {r.text[:100]}")
-
-    except Exception as e:
-        print(f"Error {symbol}: {e}")
-
-    time.sleep(1) # Rate limit avoid
+    result = get_yahoo_data(symbol)
+    if result:
+        data.append(result)
+        print(f"Done: {symbol}")
+    time.sleep(1)
 
 print(f"Total fetched: {len(data)}")
 with open('data/futures_data.json', 'w') as f:
