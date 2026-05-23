@@ -1,0 +1,135 @@
+// lib/main.dart
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Zenova Futures',
+      theme: ThemeData.dark(),
+      home: const FuturesScreen(),
+    );
+  }
+}
+
+class FuturesScreen extends StatefulWidget {
+  const FuturesScreen({Key? key}) : super(key: key);
+
+  @override
+  State<FuturesScreen> createState() => _FuturesScreenState();
+}
+
+class _FuturesScreenState extends State<FuturesScreen> {
+  List<FuturesData> futuresData = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFuturesData();
+  }
+
+  Future<void> fetchFuturesData() async {
+    setState(() => isLoading = true);
+    try {
+      // GitHub Actions workflow me NSE data fetch API endpoint
+      final response = await http.get(Uri.parse('https://api.github.com/...'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Parse data into FuturesData model
+        futuresData = data.map((e) => FuturesData.fromJson(e)).toList();
+        setState(() => isLoading = false);
+      }
+    } catch (e) {
+      print('Error: $e');
+      setState(() => isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Zenova Futures'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: fetchFuturesData,
+          ),
+        ],
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: const [
+                  DataColumn(label: Text('Script')),
+                  DataColumn(label: Text('Spot')),
+                  DataColumn(label: Text('Curr Fut')),
+                  DataColumn(label: Text('Next Fut')),
+                  DataColumn(label: Text('Spot vs Fut %')),
+                  DataColumn(label: Text('Fut vs Fut')),
+                ],
+                rows: futuresData.map((data) => DataRow(
+                  cells: [
+                    DataCell(Text(data.symbol)),
+                    DataCell(Text(data.spot.toString())),
+                    DataCell(Text(data.currFut.toString())),
+                    DataCell(Text(data.nextFut.toString())),
+                    DataCell(Text(
+                      '${data.diffSpotFut.toStringAsFixed(2)}%',
+                      style: TextStyle(
+                        color: data.diffSpotFut > 0 ? Colors.green : Colors.red,
+                      ),
+                    )),
+                    DataCell(Text(
+                      '${data.diffFutFut.toStringAsFixed(2)}%',
+                      style: TextStyle(
+                        color: data.diffFutFut > 0 ? Colors.green : Colors.red,
+                      ),
+                    )),
+                  ],
+                )).toList(),
+              ),
+            ),
+    );
+  }
+}
+
+class FuturesData {
+  final String symbol;
+  final double spot;
+  final double currFut;
+  final double nextFut;
+  final double diffSpotFut;
+  final double diffFutFut;
+
+  FuturesData({
+    required this.symbol,
+    required this.spot,
+    required this.currFut,
+    required this.nextFut,
+    required this.diffSpotFut,
+    required this.diffFutFut,
+  });
+
+  factory FuturesData.fromJson(Map<String, dynamic> json) {
+    return FuturesData(
+      symbol: json['symbol'],
+      spot: json['spot'],
+      currFut: json['currFut'],
+      nextFut: json['nextFut'],
+      diffSpotFut: json['diffSpotFut'],
+      diffFutFut: json['diffFutFut'],
+    );
+  }
+}
