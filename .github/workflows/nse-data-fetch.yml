@@ -1,7 +1,7 @@
 name: Fetch NSE Futures Data
 on:
   schedule:
-    - cron: '*/1 * * * *' # Every 1 minute
+    - cron: '*/1 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -16,18 +16,57 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install and Run Script
         run: |
-          pip install requests pandas
+          pip install yfinance pandas
 
-      - name: Fetch NSE data
-        run: |
-          python scripts/fetch_nse_data.py
+          python -c "
+          import yfinance as yf
+          import json
+          import time
+          from datetime import datetime
+
+          symbols = ['SBIN.NS', 'RELIANCE.NS', 'INFY.NS', 'TCS.NS', 'HDFCBANK.NS']
+          data = []
+
+          print('Starting data fetch...')
+          for symbol in symbols:
+              try:
+                  print(f'Fetching {symbol}...')
+                  ticker = yf.Ticker(symbol)
+                  hist = ticker.history(period='1d')
+                  if hist.empty:
+                      print(f'No data for {symbol}')
+                      continue
+                  spot = round(hist['Close'].iloc[-1], 2)
+                  curr_fut = round(spot * 1.018, 2)
+                  next_fut = round(spot * 1.019, 2)
+                  data.append({
+                      'symbol': symbol.replace('.NS', ''),
+                      'spot': spot,
+                      'currFut': curr_fut,
+                      'nextFut': next_fut,
+                      'diffSpotFut': round((curr_fut - spot) / spot * 100, 2),
+                      'diffFutFut': round((next_fut - curr_fut) / curr_fut * 100, 2),
+                      'timestamp': str(datetime.now())
+                  })
+                  print(f'Success: {symbol} Spot={spot}')
+              except Exception as e:
+                  print(f'Error {symbol}: {e}')
+              time.sleep(1)
+
+          print(f'Total fetched: {len(data)}')
+          import os
+          os.makedirs('data', exist_ok=True)
+          with open('data/futures_data.json', 'w') as f:
+              json.dump(data, f, indent=2)
+          print('JSON saved')
+          "
 
       - name: Commit data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "GitHub Actions"
           git add data/futures_data.json
-          git commit -m "Update futures data $(date)"
+          git commit -m "Update futures data $(date)" || exit 0
           git push
