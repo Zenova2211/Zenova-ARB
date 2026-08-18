@@ -6,7 +6,7 @@
     "nextFut": 1073.01,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-08-18 21:31:00.453722"
+    "timestamp": "2026-08-18 21:51:10.691658"
   },
   {
     "symbol": "RELIANCE",
@@ -15,7 +15,7 @@
     "nextFut": 1347.12,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-08-18 21:31:01.610904"
+    "timestamp": "2026-08-18 21:51:11.983336"
   },
   {
     "symbol": "INFY",
@@ -24,7 +24,7 @@
     "nextFut": 1136.18,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-08-18 21:31:02.748207"
+    "timestamp": "2026-08-18 21:51:13.207210"
   },
   {
     "symbol": "TCS",
@@ -33,7 +33,7 @@
     "nextFut": 2323.32,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-08-18 21:31:03.926603"
+    "timestamp": "2026-08-18 21:51:14.415292"
   },
   {
     "symbol": "HDFCBANK",
@@ -42,6 +42,6 @@
     "nextFut": 736.74,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-08-18 21:31:05.085823"
+    "timestamp": "2026-08-18 21:51:15.706794"
   }
 ]
