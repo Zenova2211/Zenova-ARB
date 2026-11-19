@@ -1,47 +1,47 @@
 [
   {
     "symbol": "SBIN",
-    "spot": 1152.65,
-    "currFut": 1173.4,
-    "nextFut": 1174.55,
+    "spot": 1156.0,
+    "currFut": 1176.81,
+    "nextFut": 1177.96,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-11-19 08:45:07.230339"
+    "timestamp": "2026-11-19 17:42:49.056344"
   },
   {
     "symbol": "RELIANCE",
-    "spot": 1371.2,
-    "currFut": 1395.88,
-    "nextFut": 1397.25,
+    "spot": 1375.6,
+    "currFut": 1400.36,
+    "nextFut": 1401.74,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-11-19 08:45:08.402317"
+    "timestamp": "2026-11-19 17:42:50.306062"
   },
   {
     "symbol": "INFY",
-    "spot": 1082.8,
-    "currFut": 1102.29,
-    "nextFut": 1103.37,
+    "spot": 1091.9,
+    "currFut": 1111.55,
+    "nextFut": 1112.65,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-11-19 08:45:09.558450"
+    "timestamp": "2026-11-19 17:42:52.034804"
   },
   {
     "symbol": "TCS",
-    "spot": 2342.0,
-    "currFut": 2384.16,
-    "nextFut": 2386.5,
+    "spot": 2342.7,
+    "currFut": 2384.87,
+    "nextFut": 2387.21,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-11-19 08:45:10.695077"
+    "timestamp": "2026-11-19 17:42:53.401370"
   },
   {
     "symbol": "HDFCBANK",
-    "spot": 818.85,
-    "currFut": 833.59,
-    "nextFut": 834.41,
+    "spot": 821.8,
+    "currFut": 836.59,
+    "nextFut": 837.41,
     "diffSpotFut": 1.8,
     "diffFutFut": 0.1,
-    "timestamp": "2026-11-19 08:45:11.863489"
+    "timestamp": "2026-11-19 17:42:54.682422"
   }
 ]
